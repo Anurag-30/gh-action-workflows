@@ -1,0 +1,54 @@
+name: Deploy to AWS using Vault
+
+on:
+  workflow_call:
+    # Introduced 'inputs' to define parameters that can be passed when calling this workflow
+    inputs:
+      vault-addr:
+        description: "Vault address to be used"
+        required: true
+        type: string
+      vault-token:
+        description: "Vault token to be used"
+        required: true
+        type: string      
+      secret-path:
+        description: "Secret-path inside Vault"
+        required: true
+        type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install Vault CLI
+      run: |
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        sudo apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+        sudo apt-get update && sudo apt-get install vault
+
+    - name: Login to Vault using token 
+      run: |
+        vault login ${{ inputs.vault-token }}
+        
+    - name: Retrieve AWS IAM credentials from Vault
+      id: aws_creds
+      run: |
+        
+        export SECRET_JSON=$(vault read -format json ${{ inputs.secret-path }})
+        
+        AWS_ACCESS_KEY_ID_RETRIEVED=$(echo $SECRET_JSON | jq -r '.data.access_key')
+        echo "::add-mask::$AWS_ACCESS_KEY_ID_RETRIEVED"
+        echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_RETRIEVED" >> $GITHUB_ENV
+        
+        AWS_SECRET_ACCESS_KEY_RETRIEVED=$(echo $SECRET_JSON | jq -r '.data.secret_key')
+        echo "::add-mask::$AWS_SECRET_ACCESS_KEY_RETRIEVED"
+        echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_RETRIEVED" >> $GITHUB_ENV
+        
+        AWS_SESSION_TOKEN_RETRIEVED=$(echo $SECRET_JSON | jq -r '.data.security_token')
+        echo "::add-mask::$AWS_SESSION_TOKEN_RETRIEVED"
+        echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN_RETRIEVED" >> $GITHUB_ENV
+        
+        echo "AWS credentials retrieved"
