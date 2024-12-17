@@ -24,16 +24,19 @@ runs:
       uses: actions/checkout@v2
 
     - name: Install Vault CLI
+      shell: bash
       run: |
         curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
         sudo apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main"
         sudo apt-get update && sudo apt-get install vault
 
-    - name: Login to Vault using token 
+    - name: Login to Vault using token
+      shell: bash    
       run: |
         vault login ${{ inputs.vault-token }}
         
     - name: Retrieve AWS IAM credentials from Vault
+      shell: bash  
       id: aws_creds
       run: |
         
