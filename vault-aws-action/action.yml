@@ -1,21 +1,18 @@
-name: Deploy to AWS using Vault
+name: Composite action that retrieves secrets from Vault
 
-on:
-  workflow_call:
-    # Introduced 'inputs' to define parameters that can be passed when calling this workflow
-    inputs:
-      vault-addr:
-        description: "Vault address to be used"
-        required: true
-        type: string
-      vault-token:
-        description: "Vault token to be used"
-        required: true
-        type: string      
-      secret-path:
-        description: "Secret-path inside Vault"
-        required: true
-        type: string
+inputs:
+  vault-addr:
+    description: "Vault address to be used"
+    required: true
+    type: string
+  vault-token:
+    description: "Vault token to be used"
+    required: true
+    type: string      
+  secret-path:
+    description: "Secret-path inside Vault"
+    required: true
+    type: string
 
 runs:
   using: "composite"
