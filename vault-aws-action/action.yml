@@ -1,10 +1,6 @@
 name: Composite action that retrieves secrets from Vault
 
 inputs:
-  vault-addr:
-    description: "Vault address to be used"
-    required: true
-    type: string
   vault-token:
     description: "Vault token to be used"
     required: true
@@ -30,7 +26,7 @@ runs:
     - name: Login to Vault using token
       shell: bash    
       run: |
-        vault login -address ${{ inputs.vault-addr }} ${{ inputs.vault-token }} 
+        vault login ${{ inputs.vault-token }} 
         
     - name: Retrieve AWS IAM credentials from Vault
       shell: bash  
