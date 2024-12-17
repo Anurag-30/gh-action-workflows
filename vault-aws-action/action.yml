@@ -30,7 +30,7 @@ runs:
     - name: Login to Vault using token
       shell: bash    
       run: |
-        vault login ${{ inputs.vault-token }}
+        vault login -address ${{ inputs.vault-addr }} ${{ inputs.vault-token }} 
         
     - name: Retrieve AWS IAM credentials from Vault
       shell: bash  
