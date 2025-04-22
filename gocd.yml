@@ -5,6 +5,7 @@ pipelines:
     materials:
       app-code:
         git: https://github.com/Anurag-30/gh-action-workflows.git
+        branch: main
     stages:
       - build:
           jobs:
